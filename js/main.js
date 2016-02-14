@@ -77,18 +77,19 @@ function backgroundFileLoaded (event) {
 	if (event.item.id == "headerButton") {
 
 		var buttonHome = createTextButton(loadedItem, "Home");
-		var shape = new createjs.Shape();
-		shape.graphics.drawRect(0,0,145,55);
-		buttonHome.hitArea = shape;
-		buttonHome.cursor = "pointer";
 		buttonHome.x = 150;
+		var shape = new createjs.Shape ();
+		shape.graphics.rect(buttonHome.x, buttonHome.y, buttonHome.getBounds().width, buttonHome.getBounds().height);
+		shape.cursor = "pointer";
+
 		var buttonHeroes = createTextButton(loadedItem, "Heroes");
 		buttonHeroes.x = 300;
 		var buttonJourney = createTextButton(loadedItem, "Journey");
 		buttonJourney.x = 445;
 		
-		layoutContainer.addChild(buttonHome, buttonHeroes, buttonJourney);
-
+		layoutContainer.addChild(buttonHome, buttonHeroes, buttonJourney, shape);
+		buttonHome.mouseChildren = false;
+		buttonHome.cursor = "pointer";
 	}
 	else {
 		uiElements[event.item.id] = loadedItem;
@@ -112,6 +113,9 @@ function createTextButton (buttonObject, text) {
 	btnText.y = (buttonObject.getBounds().height - btnText.getBounds().height) / 2;
 
 	buttonContainer.addChild(buttonObject, btnText);
+
+	buttonContainer.mouseChildren = false;
+	//buttonContainer.cursor = "pointer";
 	buttonContainer.cache(0,0,150,60);
 
 	return buttonContainer;
