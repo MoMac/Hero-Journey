@@ -3,8 +3,10 @@
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 
-    <link href='https://fonts.googleapis.com/css?family=Slabo+27px' rel='stylesheet' type='text/css'>
-	
+    <link href='https://fonts.googleapis.com/css?family=Slabo+27px' rel='stylesheet' media='all'>
+    <!-- <link href='https://fonts.googleapis.com/css?family=Bitter' rel='stylesheet' media='all'> -->
+	<script src="http://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js"></script>
+
 	<script src="js/jquery.min.js"></script>
     <script src="http://code.createjs.com/easeljs-0.8.2.min.js"></script>
     <script src="https://code.createjs.com/preloadjs-0.6.2.min.js"></script>
@@ -13,6 +15,13 @@
 
 
 	<style type="text/css">
+
+		@font-face {
+		    font-family: 'Slabo';
+		    src: url(https://fonts.gstatic.com/s/slabo27px/v3/LfR9_S_HMdQ73mwIHBRxoSEAvth_LlrfE80CYdSH47w.woff2);
+		    font-weight:400;
+		}
+
 		/* Remove margins and HTML scrollbars */
 		body, html  {
 			margin: 0;
@@ -22,7 +31,7 @@
 	</style>
 
 </head>
-<body onload="init();">
+<body>
     <canvas id="demoCanvas" width="500" height="300">
         alternate content
     </canvas>
