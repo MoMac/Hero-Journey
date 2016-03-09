@@ -1,0 +1,22 @@
+{
+  "name": "hero-journey",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MoMac/Hero-Journey.git"
+  },
+  "author": "mm/mg",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MoMac/Hero-Journey/issues"
+  },
+  "homepage": "https://github.com/MoMac/Hero-Journey#readme",
+  "dependencies": {
+    "express": "^4.13.4"
+  }
+}
