@@ -24,10 +24,10 @@ catch (e) {
 //Init
  var stage,
  	 preload,
- 	 layoutContainer,
+ 	 
  	 heroSummaryContainer,
  	 manifest = new Array();
-
+this.layoutContainer = new createjs.Container();
 this.uiElements = {};
 
 
@@ -35,7 +35,6 @@ this.uiElements = {};
 
 	stage = new createjs.Stage("demoCanvas");
 	stage.enableMouseOver(10);
-	layoutContainer = new createjs.Container();
 
 	createBackground();
 
@@ -162,7 +161,7 @@ function backgroundImageLoaded (event) {
 // 	btnText.color = "white";
 // 	btnText.x = (buttonObject.getBounds().width - btnText.getBounds().width) / 2;
 // 	btnText.y = (buttonObject.getBounds().height - btnText.getBounds().height) / 2;
-
+// 
 // 	buttonContainer.addChild(buttonObject, btnText);
 // 	buttonContainer.mouseChildren = false;
 
@@ -176,8 +175,12 @@ function backgroundImageLoaded (event) {
 // }
 
 function backgroundInitialized () {
+
 	stage.addChild(layoutContainer);
+
 	resizeLayout();
+
+	layoutContainer.cache(0, 0, layoutContainer.getBounds().width, layoutContainer.getBounds().height);
 
 	utils.getEl("heroesButton").on("click", function () {
 		renderHeroSummary();
