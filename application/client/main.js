@@ -34,7 +34,7 @@ this.uiElements = {};
  function init() {
 
 	stage = new createjs.Stage("demoCanvas");
-	stage.enableMouseOver();
+	stage.enableMouseOver(10);
 	layoutContainer = new createjs.Container();
 
 	createBackground();
@@ -100,6 +100,16 @@ function createBackground() {
 		{
 			id: "heroesButton",
 			src: "ui-general-headerbutton-02.png"
+		},
+		{
+			id: "journeyButtonHover",
+			src: "ui-general-headerbutton-01-glow.png",
+			cache: true
+		},
+		{
+			id: "heroesButtonHover",
+			src: "ui-general-headerbutton-02-glow.png",
+			cache: true
 		}
 	];
 
@@ -115,15 +125,19 @@ function backgroundImageLoaded (event) {
 		element: loadedItem
 	};
 
-	if (event.item.id == "journeyButton") {
-		utils.getEl(event.item.id).x = $(window).width() / 2 - utils.getEl(event.item.id).getBounds().width;
-		layoutContainer.addChild(utils.getEl(event.item.id));
-		utils.setCursor(utils.getEl(event.item.id));
+	if (event.item.id.indexOf("journeyButton") >= 0) {
+		var el = utils.getEl(event.item.id);
+		el.x = $(window).width() / 2 - el.getBounds().width;
+		layoutContainer.addChild(el);
+		utils.setCursor(el);
+		utils.setHover(event.item);
 	}
-	else if (event.item.id == "heroesButton") {
-		utils.getEl(event.item.id).x = $(window).width() / 2;
-		utils.setCursor(utils.getEl(event.item.id));
-		layoutContainer.addChild(utils.getEl(event.item.id));
+	else if (event.item.id.indexOf("heroesButton") >= 0) {
+		var el = utils.getEl(event.item.id);
+		el.x = $(window).width() / 2;
+		layoutContainer.addChild(el);
+		utils.setCursor(el);
+		utils.setHover(event.item);
 	}
 	else if (event.item.id == "contentArea") {
 		loadedItem.x = ($(window).width() - loadedItem.getBounds().width) / 2;
@@ -133,6 +147,9 @@ function backgroundImageLoaded (event) {
 	else {
 		layoutContainer.addChild(loadedItem);
 	}
+
+	if (event.item.cache)
+		utils.getEl(event.item.id).visible = false;
 }
 
 //Text Button
