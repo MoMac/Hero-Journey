@@ -8,7 +8,6 @@ global.app = express();
 app.use(express.static('client'));
 
 // Create a http server on port 8080
-// var server = require('http').createServer(app).listen(8080);
 app.listen(8080, function () {
   console.log("Listening on port 8080!");
 });

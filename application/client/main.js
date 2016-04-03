@@ -24,9 +24,10 @@ catch (e) {
 //Init
  var stage,
  	 preload,
- 	 layoutContainer;
- var manifest = new Array();
- var uiElements = {};
+ 	 layoutContainer,
+ 	 manifest = new Array(),
+ 	 uiElements = {};
+
 
  function init() {
 
@@ -57,7 +58,7 @@ function resizeLayout() {
 		bg.scaleY = $(window).height()/bg.getBounds().height;
 	}
 
-	uiElements.headerBar.scaleX = $(window).width();
+	uiElements.headerBar.scaleX = $(window).width() / uiElements.headerBar.getBounds().width;
 }
 
 function preloadAssets (manifest, fileloadCallback, completeCallback) {
@@ -79,19 +80,23 @@ function createBackground() {
 	manifest = [
 		{
 			id: "background",
-			src: "test-bg.jpg"
+			src: "ui-general-herodetinvbg.png"
 		},
 		{
 			id: "contentArea",
-			src: "ui-generalbg-complete.png"
+			src: "ui-general-generalbg.png"
 		},
 		{
 			id: "headerBar",
-			src: "header-bg.png",
+			src: "ui-general-headerbg.png",
 		},
 		{
-			id: "headerButton",
-			src: "header-button1.png"
+			id: "journeyButton",
+			src: "ui-general-headerbutton-01.png"
+		},
+		{
+			id: "heroesButton",
+			src: "ui-general-headerbutton-02.png"
 		}
 	];
 
@@ -106,23 +111,23 @@ function backgroundImageLoaded (event) {
 
 	if (event.item.id == "headerButton") {
 
-		uiElements.buttonHome = createTextButton(loadedItem, "Home");
-		uiElements.buttonHome.x = 150;
+		// uiElements.buttonHome = createTextButton(loadedItem, "Home");
+		// uiElements.buttonHome.x = 150;
 		var shape = new createjs.Shape ();
 		shape.graphics.rect(uiElements.buttonHome.x, uiElements.buttonHome.y, uiElements.buttonHome.getBounds().width, uiElements.buttonHome.getBounds().height);
 		shape.cursor = "pointer";
 
-		uiElements.buttonHeroes = createTextButton(loadedItem, "Heroes");
-		uiElements.buttonHeroes.x = 300;
-		uiElements.buttonJourney = createTextButton(loadedItem, "Journey");
-		uiElements.buttonJourney.x = 445;
+		// uiElements.buttonHeroes = createTextButton(loadedItem, "Heroes");
+		// uiElements.buttonHeroes.x = 300;
+		// uiElements.buttonJourney = createTextButton(loadedItem, "Journey");
+		// uiElements.buttonJourney.x = 445;
 		
 		layoutContainer.addChild(uiElements.buttonHome, uiElements.buttonHeroes, uiElements.buttonJourney);
 	}
 	else if (event.item.id == "contentArea") {
 		uiElements[event.item.id] = loadedItem;
 		loadedItem.x = ($(window).width() - loadedItem.getBounds().width) / 2;
-		loadedItem.y = 150;
+		loadedItem.y = 100;
 		layoutContainer.addChild(loadedItem);
 	}
 	else {
@@ -132,27 +137,27 @@ function backgroundImageLoaded (event) {
 }
 
 //Text Button
-function createTextButton (buttonObject, text) {
+// function createTextButton (buttonObject, text) {
 
-	var buttonContainer = new createjs.Container();
-	var btnText = new createjs.Text();
-	btnText.text = text;
-	btnText.font = "18px 'Slabo 27px'";
-	btnText.color = "white";
-	btnText.x = (buttonObject.getBounds().width - btnText.getBounds().width) / 2;
-	btnText.y = (buttonObject.getBounds().height - btnText.getBounds().height) / 2;
+// 	var buttonContainer = new createjs.Container();
+// 	var btnText = new createjs.Text();
+// 	btnText.text = text;
+// 	btnText.font = "18px 'Slabo 27px'";
+// 	btnText.color = "white";
+// 	btnText.x = (buttonObject.getBounds().width - btnText.getBounds().width) / 2;
+// 	btnText.y = (buttonObject.getBounds().height - btnText.getBounds().height) / 2;
 
-	buttonContainer.addChild(buttonObject, btnText);
-	buttonContainer.mouseChildren = false;
+// 	buttonContainer.addChild(buttonObject, btnText);
+// 	buttonContainer.mouseChildren = false;
 
-	var shape = new createjs.Shape ();
-	shape.graphics.beginFill("#000000").drawRect(0,0,buttonContainer.getBounds().width, buttonContainer.getBounds().height);
-	buttonContainer.hitArea = shape;
-	buttonContainer.cursor = "pointer";
-	buttonContainer.cache(0,0,150,60);
+// 	var shape = new createjs.Shape ();
+// 	shape.graphics.beginFill("#000000").drawRect(0,0,buttonContainer.getBounds().width, buttonContainer.getBounds().height);
+// 	buttonContainer.hitArea = shape;
+// 	buttonContainer.cursor = "pointer";
+// 	buttonContainer.cache(0,0,150,60);
 
-	return buttonContainer;
-}
+// 	return buttonContainer;
+// }
 
 function backgroundInitialized () {
 	stage.addChild(layoutContainer);
