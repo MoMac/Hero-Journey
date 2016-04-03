@@ -1,9 +1,21 @@
-var utils = {
+utils = {
 
 	setCursor: function (element) {
-		var shape = new createjs.Shape ();
-		shape.graphics.rect(element.x, element.y, element.getBounds().width, element.buttonHome.getBounds().height);
-		shape.cursor = "pointer";
+		if (typeof shape === "undefined")
+			shape = new createjs.Shape ();
+		else 
+			shape = shape.clone();
+		shape.graphics.beginFill("#000").drawRect(0, 0, element.getBounds().width, element.getBounds().height);
+		element.hitArea = shape;
+		element.cursor = "pointer";
+	},
+
+	getEl: function (id) {
+		return uiElements[id].element;
+	},
+
+	getElVal: function (id) {
+		return uiElements[id].value;
 	}
 
 };

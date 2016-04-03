@@ -25,8 +25,10 @@ catch (e) {
  var stage,
  	 preload,
  	 layoutContainer,
- 	 manifest = new Array(),
- 	 uiElements = {};
+ 	 heroSummaryContainer,
+ 	 manifest = new Array();
+
+this.uiElements = {};
 
 
  function init() {
@@ -36,6 +38,7 @@ catch (e) {
 	layoutContainer = new createjs.Container();
 
 	createBackground();
+
 	createjs.Ticker.on("tick", function () {
 		stage.update();
 	});
@@ -49,7 +52,7 @@ function resizeLayout() {
 	stage.canvas.width = window.innerWidth;
 	stage.canvas.height = window.innerHeight;
 
-	var bg = uiElements.background;
+	var bg = utils.getEl("background");
 	bg.scaleX = $(window).width()/bg.getBounds().width;
 	bg.scaleY = $(window).width()/bg.getBounds().width;
 
@@ -58,7 +61,7 @@ function resizeLayout() {
 		bg.scaleY = $(window).height()/bg.getBounds().height;
 	}
 
-	uiElements.headerBar.scaleX = $(window).width() / uiElements.headerBar.getBounds().width;
+	utils.getEl("headerBar").scaleX = $(window).width() / utils.getEl("headerBar").getBounds().width;
 }
 
 function preloadAssets (manifest, fileloadCallback, completeCallback) {
@@ -108,30 +111,26 @@ function backgroundImageLoaded (event) {
 
 	var result = preload.getResult(event.item.id);
 	loadedItem = new createjs.Bitmap(result);
+	uiElements[event.item.id] = {
+		element: loadedItem
+	};
 
-	if (event.item.id == "headerButton") {
-
-		// uiElements.buttonHome = createTextButton(loadedItem, "Home");
-		// uiElements.buttonHome.x = 150;
-		var shape = new createjs.Shape ();
-		shape.graphics.rect(uiElements.buttonHome.x, uiElements.buttonHome.y, uiElements.buttonHome.getBounds().width, uiElements.buttonHome.getBounds().height);
-		shape.cursor = "pointer";
-
-		// uiElements.buttonHeroes = createTextButton(loadedItem, "Heroes");
-		// uiElements.buttonHeroes.x = 300;
-		// uiElements.buttonJourney = createTextButton(loadedItem, "Journey");
-		// uiElements.buttonJourney.x = 445;
-		
-		layoutContainer.addChild(uiElements.buttonHome, uiElements.buttonHeroes, uiElements.buttonJourney);
+	if (event.item.id == "journeyButton") {
+		utils.getEl(event.item.id).x = $(window).width() / 2 - utils.getEl(event.item.id).getBounds().width;
+		layoutContainer.addChild(utils.getEl(event.item.id));
+		utils.setCursor(utils.getEl(event.item.id));
+	}
+	else if (event.item.id == "heroesButton") {
+		utils.getEl(event.item.id).x = $(window).width() / 2;
+		utils.setCursor(utils.getEl(event.item.id));
+		layoutContainer.addChild(utils.getEl(event.item.id));
 	}
 	else if (event.item.id == "contentArea") {
-		uiElements[event.item.id] = loadedItem;
 		loadedItem.x = ($(window).width() - loadedItem.getBounds().width) / 2;
-		loadedItem.y = 100;
+		loadedItem.y = 75;
 		layoutContainer.addChild(loadedItem);
 	}
 	else {
-		uiElements[event.item.id] = loadedItem;
 		layoutContainer.addChild(loadedItem);
 	}
 }
@@ -163,32 +162,77 @@ function backgroundInitialized () {
 	stage.addChild(layoutContainer);
 	resizeLayout();
 
-	uiElements.buttonHeroes.on("click", function () {
-		var manifest = [
-			{
-				id: "heroSelection",
-				src: "heroes-selection-bg.jpg"
-			}
-		];
-		preloadAssets(manifest, function (event) {
+	utils.getEl("heroesButton").on("click", function () {
+		renderHeroSummary();
+	});
+}
 
-			layoutContainer.removeChild(uiElements.contentArea);
+function renderHeroSummary () {
+	var manifest = [
+		{
+			id: "hero1",
+			src: "content-herosumavatar-01.png"
+		},
+		{
+			id: "hero2",
+			src: "content-herosumavatar-02.png"
+		},
+		{
+			id: "hero3",
+			src: "content-herosumavatar-03.png"
+		},
+		{
+			id: "xpBar",
+			src: "ui-general-herosumxpbar.png"
+		},
+		{
+			id: "statIconAttack",
+			src: "content-iconmed-attack.png",
+			value: "Attack"
+		},
+		{
+			id: "statIconDef",
+			src: "content-iconmed-def.png",
+			value: "Attack"
+		},
+		{
+			id: "statIconHealth",
+			src: "content-iconmed-health.png",
+			value: "Attack"
+		},
+		{
+			id: "statIconMagic",
+			src: "content-iconmed-magic.png",
+			value: "Attack"
+		},
+	];
 
-			var result = preload.getResult(event.item.id);
-			loadedItem = new createjs.Bitmap(result);
+	heroSummaryContainer = new createjs.Container();
 
-			var heroSel1 = loadedItem;
-			var heroSel2 = loadedItem.clone();
-			heroSel2.x = 350;
-			var heroSel3 = loadedItem.clone();
-			heroSel3.x = 700;
+	preloadAssets(manifest, function (event) {
+		var result = preload.getResult(event.item.id);
+		loadedItem = new createjs.Bitmap(result);
+		uiElements[event.item.id] = {
+			element: loadedItem
+		}
 
-			var heroContainer = new createjs.Container();
-			heroContainer.addChild(heroSel1, heroSel2, heroSel3);
-			heroContainer.x = ($(window).width() - heroContainer.getBounds().width) / 2;
-			heroContainer.y = 150;
+		if (event.item.value)
+			uiElements[event.item.id].value = event.item.value;
+	}, 
 
-			stage.addChild(heroContainer);
-		});
+	function () {
+		
+		for (var i = 1; i <= 3; i++) {
+			var heroEl = utils.getEl("hero" + i);
+			heroSummaryContainer.addChild(heroEl);
+
+			if (i > 1)
+				heroEl.x = heroSummaryContainer.getBounds().width + 15;
+		}
+		// heroSummaryContainer.addChild();
+		heroSummaryContainer.x = ($(window).width() - heroSummaryContainer.getBounds().width) / 2;
+		heroSummaryContainer.y = 150;
+
+		stage.addChild(heroSummaryContainer);
 	});
 }
