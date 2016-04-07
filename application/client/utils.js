@@ -48,3 +48,26 @@ utils = {
 	}
 
 };
+
+//Text Button
+// function createTextButton (buttonObject, text) {
+
+// 	var buttonContainer = new createjs.Container();
+// 	var btnText = new createjs.Text();
+// 	btnText.text = text;
+// 	btnText.font = "18px 'Slabo 27px'";
+// 	btnText.color = "white";
+// 	btnText.x = (buttonObject.getBounds().width - btnText.getBounds().width) / 2;
+// 	btnText.y = (buttonObject.getBounds().height - btnText.getBounds().height) / 2;
+// 
+// 	buttonContainer.addChild(buttonObject, btnText);
+// 	buttonContainer.mouseChildren = false;
+
+// 	var shape = new createjs.Shape ();
+// 	shape.graphics.beginFill("#000000").drawRect(0,0,buttonContainer.getBounds().width, buttonContainer.getBounds().height);
+// 	buttonContainer.hitArea = shape;
+// 	buttonContainer.cursor = "pointer";
+// 	buttonContainer.cache(0,0,150,60);
+
+// 	return buttonContainer;
+// }

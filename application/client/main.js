@@ -24,7 +24,8 @@ catch (e) {
 //Init
  var stage,
  	 preload,
- 	 heroSummaryContainer,
+ 	 heroSummaryContainer = new createjs.Container(),
+ 	 contentContainer = new createjs.Container(),
  	 manifest = new Array();
 this.layoutContainer = new createjs.Container();
 this.uiElements = {};
@@ -35,7 +36,7 @@ this.uiElements = {};
 	stage = new createjs.Stage("demoCanvas");
 	stage.enableMouseOver(10);
 
-	createBackground();
+	initContent();
 
 	createjs.Ticker.on("tick", function () {
 		stage.update();
@@ -51,7 +52,7 @@ function resizeLayout() {
 	stage.canvas.height = window.innerHeight;
 
 	var bg = utils.getEl("background");
-	var content = utils.getEl("contentArea");
+	var contentBg = utils.getEl("contentBgBg");
 
 	bg.scaleX = $(window).width() / bg.getBounds().width;
 	bg.scaleY = $(window).width() / bg.getBounds().width;
@@ -63,10 +64,10 @@ function resizeLayout() {
 
 	utils.getEl("headerBar").scaleX = $(window).width() / utils.getEl("headerBar").getBounds().width;
 
-	content.y = 75;
-	content.scaleX = ($(window).height() - content.getTransformedBounds().y) / content.getBounds().height;
-	content.scaleY = ($(window).height() - content.getTransformedBounds().y) / content.getBounds().height;
-	content.x = ($(window).width() - content.getTransformedBounds().width) / 2;
+	contentBg.y = 75;
+	contentBg.scaleX = ($(window).height() - contentBg.getTransformedBounds().y) / contentBg.getBounds().height;
+	contentBg.scaleY = ($(window).height() - contentBg.getTransformedBounds().y) / contentBg.getBounds().height;
+	contentBg.x = ($(window).width() - contentBg.getTransformedBounds().width) / 2;
 
 }
 
@@ -84,15 +85,15 @@ function preloadAssets (manifest, fileloadCallback, completeCallback) {
 	preload.loadManifest(manifest);
 }
 
-function createBackground() {
+function initContent() {
 
 	manifest = [
 		{
 			id: "background",
-			src: "ui-general-herodetinvbg.png"
+			src: "content-widestbackground-00.png"
 		},
 		{
-			id: "contentArea",
+			id: "contentBg",
 			src: "ui-general-generalbg.png"
 		},
 		{
@@ -131,50 +132,28 @@ function backgroundImageLoaded (event) {
 		element: loadedItem
 	};
 
+
 	if (event.item.id.indexOf("journeyButton") >= 0) {
 		var el = utils.getEl(event.item.id);
 		el.x = $(window).width() / 2 - el.getBounds().width;
-		layoutContainer.addChild(el);
 		utils.setCursor(el);
 		utils.setHover(event.item);
 	}
 	else if (event.item.id.indexOf("heroesButton") >= 0) {
 		var el = utils.getEl(event.item.id);
 		el.x = $(window).width() / 2;
-		layoutContainer.addChild(el);
 		utils.setCursor(el);
 		utils.setHover(event.item);
 	}
-	else {
-		layoutContainer.addChild(loadedItem);
+	else if (event.item.id == "contentBg") {
+		loadedItem.alpha = 0.85;
 	}
+
+	layoutContainer.addChild(loadedItem);
 
 	if (event.item.cache)
 		utils.getEl(event.item.id).visible = false;
 }
-
-//Text Button
-// function createTextButton (buttonObject, text) {
-
-// 	var buttonContainer = new createjs.Container();
-// 	var btnText = new createjs.Text();
-// 	btnText.text = text;
-// 	btnText.font = "18px 'Slabo 27px'";
-// 	btnText.color = "white";
-// 	btnText.x = (buttonObject.getBounds().width - btnText.getBounds().width) / 2;
-// 	btnText.y = (buttonObject.getBounds().height - btnText.getBounds().height) / 2;
-// 
-// 	buttonContainer.addChild(buttonObject, btnText);
-// 	buttonContainer.mouseChildren = false;
-
-// 	var shape = new createjs.Shape ();
-// 	shape.graphics.beginFill("#000000").drawRect(0,0,buttonContainer.getBounds().width, buttonContainer.getBounds().height);
-// 	buttonContainer.hitArea = shape;
-// 	buttonContainer.cursor = "pointer";
-// 	buttonContainer.cache(0,0,150,60);
-
-// 	return buttonContainer;
-// }
 
 function backgroundInitialized () {
 
@@ -185,6 +164,15 @@ function backgroundInitialized () {
 	utils.getEl("heroesButtonHover").on("click", function () {
 		renderHeroSummary();
 	});
+
+	var contentBounds = utils.getEl("contentBg").getTransformedBounds();
+	contentContainer.setBounds(contentBounds.x + (contentBounds.width - (contentBounds.width *  0.025)) ,
+							   contentBounds.y + (contentBounds.height - (contentBounds.height * 0.0210526315789474)), 
+							   contentBounds.width - (contentBounds.width * 0.05),
+							   contentBounds.height - (contentBounds.height * 0.0421052631578947));
+	contentContainer.addChild(utils.getEl("contentBg"));
+
+
 }
 
 function renderHeroSummary () {
@@ -226,8 +214,6 @@ function renderHeroSummary () {
 			value: "Attack"
 		},
 	];
-
-	heroSummaryContainer = new createjs.Container();
 
 	preloadAssets(manifest, function (event) {
 		var result = preload.getResult(event.item.id);
