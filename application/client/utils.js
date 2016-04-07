@@ -17,24 +17,24 @@ utils = {
 			el.on("mouseover", function () {
 				el.visible = false;
 				utils.getEl(item.id + "Hover").visible = true;
-				layoutContainer.updateCache();
+				// layoutContainer.updateCache();
 			});
 			el.on("mouseout", function () {
 				el.visible = true;
 				utils.getEl(item.id + "Hover").visible = false;
-				layoutContainer.updateCache();
+				// layoutContainer.updateCache();
 			});
 		}
 		else {
 			el.on("mouseover", function () {
 				el.visible = true;
 				utils.getEl(item.id.slice(0, item.id.indexOf("Hover"))).visible = false;
-				layoutContainer.updateCache();
+				// layoutContainer.updateCache();
 			});
 			el.on("mouseout", function () {
 				el.visible = false;
 				utils.getEl(item.id.slice(0, item.id.indexOf("Hover"))).visible = true;
-				layoutContainer.updateCache();
+				// layoutContainer.updateCache();
 			})
 		}
 	},
