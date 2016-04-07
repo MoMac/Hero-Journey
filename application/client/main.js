@@ -24,7 +24,6 @@ catch (e) {
 //Init
  var stage,
  	 preload,
- 	 
  	 heroSummaryContainer,
  	 manifest = new Array();
 this.layoutContainer = new createjs.Container();
@@ -52,15 +51,23 @@ function resizeLayout() {
 	stage.canvas.height = window.innerHeight;
 
 	var bg = utils.getEl("background");
-	bg.scaleX = $(window).width()/bg.getBounds().width;
-	bg.scaleY = $(window).width()/bg.getBounds().width;
+	var content = utils.getEl("contentArea");
 
-	if (bg.getTransformedBounds().height < $(window).height()) {
-		bg.scaleX = $(window).height()/bg.getBounds().height;
-		bg.scaleY = $(window).height()/bg.getBounds().height;
+	bg.scaleX = $(window).width() / bg.getBounds().width;
+	bg.scaleY = $(window).width() / bg.getBounds().width;
+
+	if (bg.getTransformedBounds().height < $(window).height() - bg.getTransformedBounds().y) {
+		bg.scaleX = $(window).height() / bg.getBounds().height;
+		bg.scaleY = $(window).height() / bg.getBounds().height;
 	}
 
 	utils.getEl("headerBar").scaleX = $(window).width() / utils.getEl("headerBar").getBounds().width;
+
+	content.y = 75;
+	content.scaleX = ($(window).height() - content.getTransformedBounds().y) / content.getBounds().height;
+	content.scaleY = ($(window).height() - content.getTransformedBounds().y) / content.getBounds().height;
+	content.x = ($(window).width() - content.getTransformedBounds().width) / 2;
+
 }
 
 function preloadAssets (manifest, fileloadCallback, completeCallback) {
@@ -138,11 +145,6 @@ function backgroundImageLoaded (event) {
 		utils.setCursor(el);
 		utils.setHover(event.item);
 	}
-	else if (event.item.id == "contentArea") {
-		loadedItem.x = ($(window).width() - loadedItem.getBounds().width) / 2;
-		loadedItem.y = 75;
-		layoutContainer.addChild(loadedItem);
-	}
 	else {
 		layoutContainer.addChild(loadedItem);
 	}
@@ -180,9 +182,7 @@ function backgroundInitialized () {
 
 	resizeLayout();
 
-	layoutContainer.cache(0, 0, layoutContainer.getBounds().width, layoutContainer.getBounds().height);
-
-	utils.getEl("heroesButton").on("click", function () {
+	utils.getEl("heroesButtonHover").on("click", function () {
 		renderHeroSummary();
 	});
 }
@@ -238,10 +238,9 @@ function renderHeroSummary () {
 
 		if (event.item.value)
 			uiElements[event.item.id].value = event.item.value;
-	}, 
+	},
 
 	function () {
-		
 		for (var i = 1; i <= 3; i++) {
 			var heroEl = utils.getEl("hero" + i);
 			heroSummaryContainer.addChild(heroEl);
@@ -249,7 +248,6 @@ function renderHeroSummary () {
 			if (i > 1)
 				heroEl.x = heroSummaryContainer.getBounds().width + 15;
 		}
-		// heroSummaryContainer.addChild();
 		heroSummaryContainer.x = ($(window).width() - heroSummaryContainer.getBounds().width) / 2;
 		heroSummaryContainer.y = 150;
 
