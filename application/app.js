@@ -5,7 +5,17 @@ var express = require('express');
 global.app = express();
  
 //Serve static client files
-app.use(express.static('client'));
+// app.use(express.static('client'));
+
+app.configure(function(){
+	// statische Dateien ausliefern
+	app.use(express.static(__dirname + '/public'));
+});
+
+app.get('/', function (req, res) {
+	// so wird die Datei index.html ausgegeben
+	res.sendfile(__dirname + '/public/index.html');
+});
 
 // Create a http server on port 8080
 app.listen(8080, function () {

@@ -17,12 +17,14 @@ utils = {
 			el.on("mouseover", function () {
 				el.visible = false;
 				utils.getEl(item.id + "Hover").visible = true;
+				stage.update();
 				// layoutContainer.updateCache();
 			});
 			el.on("mouseout", function () {
 				el.visible = true;
 				utils.getEl(item.id + "Hover").visible = false;
 				// layoutContainer.updateCache();
+				stage.update();
 			});
 		}
 		else {
@@ -30,11 +32,13 @@ utils = {
 				el.visible = true;
 				utils.getEl(item.id.slice(0, item.id.indexOf("Hover"))).visible = false;
 				// layoutContainer.updateCache();
+				stage.update();
 			});
 			el.on("mouseout", function () {
 				el.visible = false;
 				utils.getEl(item.id.slice(0, item.id.indexOf("Hover"))).visible = true;
 				// layoutContainer.updateCache();
+				stage.update();
 			})
 		}
 	},
@@ -45,6 +49,29 @@ utils = {
 
 	getElVal: function (id) {
 		return uiElements[id].value;
+	},
+
+	setScale: function (el, tarEl, pct, scaleHeight) {
+		var scaleFactor = 0;
+
+		if (scaleHeight)
+			scaleFactor = tarEl.getBounds().height * pct / el.getBounds().height;
+		else 
+			scaleFactor = tarEl.getBounds().width * pct / el.getBounds().width;
+
+		el.scaleX = scaleFactor;
+		el.scaleY = scaleFactor;
+	},
+
+	addText: function (container, text) {
+		var label = new createjs.Text();
+		label.text = text;
+		label.font = "18px 'Slabo 27px'";
+		label.color = "black";
+		label.x = 10;
+		// label.y = (container.getBounds().height - label.getMeasuredHeight() / 2);
+
+		container.addChild(label);
 	}
 
 };

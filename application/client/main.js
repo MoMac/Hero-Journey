@@ -25,6 +25,7 @@ catch (e) {
  var stage,
  	 preload,
  	 heroSummaryContainer = new createjs.Container(),
+ 	 contentWrapper = new createjs.Container(),
  	 contentContainer = new createjs.Container(),
  	 manifest = new Array();
 this.layoutContainer = new createjs.Container();
@@ -38,13 +39,15 @@ this.uiElements = {};
 
 	initContent();
 
-	createjs.Ticker.on("tick", function () {
-		stage.update();
-	});
+	// createjs.Ticker.on("tick", function () {
+	// 	stage.update();
+	// });
 	
 	//Initialize canvas size
 	stage.canvas.width = window.innerWidth;
 	stage.canvas.height = window.innerHeight;
+
+	stage.update();
 }
 
 function resizeLayout() {	
@@ -52,7 +55,7 @@ function resizeLayout() {
 	stage.canvas.height = window.innerHeight;
 
 	var bg = utils.getEl("background");
-	var contentBg = utils.getEl("contentBgBg");
+	// var contentBg = utils.getEl("contentBg");
 
 	bg.scaleX = $(window).width() / bg.getBounds().width;
 	bg.scaleY = $(window).width() / bg.getBounds().width;
@@ -64,10 +67,12 @@ function resizeLayout() {
 
 	utils.getEl("headerBar").scaleX = $(window).width() / utils.getEl("headerBar").getBounds().width;
 
-	contentBg.y = 75;
-	contentBg.scaleX = ($(window).height() - contentBg.getTransformedBounds().y) / contentBg.getBounds().height;
-	contentBg.scaleY = ($(window).height() - contentBg.getTransformedBounds().y) / contentBg.getBounds().height;
-	contentBg.x = ($(window).width() - contentBg.getTransformedBounds().width) / 2;
+	contentWrapper.y = 55;
+	contentWrapper.scaleX = ($(window).height() - contentWrapper.getTransformedBounds().y) / contentWrapper.getBounds().height;
+	contentWrapper.scaleY = ($(window).height() - contentWrapper.getTransformedBounds().y) / contentWrapper.getBounds().height;
+	contentWrapper.x = ($(window).width() - contentWrapper.getTransformedBounds().width) / 2;
+
+	stage.update();
 
 }
 
@@ -146,7 +151,9 @@ function backgroundImageLoaded (event) {
 		utils.setHover(event.item);
 	}
 	else if (event.item.id == "contentBg") {
-		loadedItem.alpha = 0.85;
+		loadedItem.alpha = 0.8;
+		contentWrapper.addChild(loadedItem);
+		return;
 	}
 
 	layoutContainer.addChild(loadedItem);
@@ -159,20 +166,26 @@ function backgroundInitialized () {
 
 	stage.addChild(layoutContainer);
 
-	resizeLayout();
+
+	var contentBounds = contentWrapper.getTransformedBounds();
+
+	//Set Bounds for Content Area
+	contentContainer.setBounds(0, 0, contentBounds.width - (contentBounds.width * 0.05), contentBounds.height - (contentBounds.height * 0.0421052631578947));
+	contentContainer.x = contentBounds.x + contentBounds.width *  0.025;
+	contentContainer.y = contentBounds.y + contentBounds.height * 0.0210526315789474;
+
+	
+	contentWrapper.addChild(contentContainer);
+	stage.addChild(contentWrapper);
+
+		resizeLayout();
 
 	utils.getEl("heroesButtonHover").on("click", function () {
 		renderHeroSummary();
 	});
 
-	var contentBounds = utils.getEl("contentBg").getTransformedBounds();
-	contentContainer.setBounds(contentBounds.x + (contentBounds.width - (contentBounds.width *  0.025)) ,
-							   contentBounds.y + (contentBounds.height - (contentBounds.height * 0.0210526315789474)), 
-							   contentBounds.width - (contentBounds.width * 0.05),
-							   contentBounds.height - (contentBounds.height * 0.0421052631578947));
-	contentContainer.addChild(utils.getEl("contentBg"));
-
-
+	
+	stage.update();
 }
 
 function renderHeroSummary () {
@@ -191,7 +204,11 @@ function renderHeroSummary () {
 		},
 		{
 			id: "xpBar",
-			src: "ui-general-herosumxpbar.png"
+			src: "ui-general-xpbarbg.png"
+		},
+		{
+			id: "detBg",
+			src: "ui-general-herosumbglow.png"
 		},
 		{
 			id: "statIconAttack",
@@ -201,18 +218,18 @@ function renderHeroSummary () {
 		{
 			id: "statIconDef",
 			src: "content-iconmed-def.png",
-			value: "Attack"
+			value: "Defense"
 		},
 		{
 			id: "statIconHealth",
 			src: "content-iconmed-health.png",
-			value: "Attack"
+			value: "Health"
 		},
 		{
 			id: "statIconMagic",
 			src: "content-iconmed-magic.png",
-			value: "Attack"
-		},
+			value: "Magic"
+		}
 	];
 
 	preloadAssets(manifest, function (event) {
@@ -227,16 +244,45 @@ function renderHeroSummary () {
 	},
 
 	function () {
+
 		for (var i = 1; i <= 3; i++) {
-			var heroEl = utils.getEl("hero" + i);
-			heroSummaryContainer.addChild(heroEl);
+			var heroContainer = new createjs.Container();
+			var details = new createjs.Container();
 
-			if (i > 1)
-				heroEl.x = heroSummaryContainer.getBounds().width + 15;
+			heroContainer.setBounds (0,	0, contentContainer.getBounds().width/3, contentContainer.getBounds().height);
+			heroContainer.x = contentContainer.getBounds().width/3 * (i-1);
+
+			var avatar = utils.getEl("hero" + i);
+			utils.setScale(avatar, heroContainer, 1);
+
+			var bg = utils.getEl("detBg").clone();
+			utils.setScale(bg, heroContainer, 1);
+
+			details.setBounds(0, 0, heroContainer.getBounds().width, heroContainer.getBounds().height * 0.3);
+			details.y = heroContainer.getBounds().height * 0.7;
+
+			var row1 = new createjs.Container();
+			row1.setBounds(0,0, details.getBounds().width, details.getBounds().height * 1/3);
+			console.log(row1.getBounds().height);
+			utils.addText(row1, "Hero" + i);
+
+			details.addChild(bg, row1);
+
+			uiElements["heroContainer" + i] = {
+				element: heroContainer
+			};
+
+			heroContainer.addChild(avatar, details);
+			heroSummaryContainer.addChild(heroContainer);
 		}
-		heroSummaryContainer.x = ($(window).width() - heroSummaryContainer.getBounds().width) / 2;
-		heroSummaryContainer.y = 150;
 
-		stage.addChild(heroSummaryContainer);
+		var xpBar = utils.getEl("xpBar");
+		utils.setScale(xpBar, contentContainer, 1);
+		xpBar.y = contentContainer.getBounds().height * 0.6;
+		heroSummaryContainer.addChild(xpBar);
+
+		contentContainer.addChild(heroSummaryContainer);
+
+		stage.update();
 	});
 }
