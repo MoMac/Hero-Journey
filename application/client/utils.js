@@ -51,6 +51,12 @@ utils = {
 		return uiElements[id].value;
 	},
 
+	getScaledEl: function (id, tarEl, pct, scaleHeight) {
+		var el = utils.getEl(id);
+		utils.setScale(el, tarEl, 1, scaleHeight);
+		return el;
+	},
+
 	setScale: function (el, tarEl, pct, scaleHeight) {
 		var scaleFactor = 0;
 
@@ -63,38 +69,27 @@ utils = {
 		el.scaleY = scaleFactor;
 	},
 
-	addText: function (container, text) {
+	addText: function (container, text, size) {
 		var label = new createjs.Text();
 		label.text = text;
 		label.font = "18px 'Slabo 27px'";
+		if (size) {
+			label.font = size + "px 'Slabo 27px'"
+		}
+
 		label.color = "black";
 		label.x = 10;
-		// label.y = (container.getBounds().height - label.getMeasuredHeight() / 2);
+		label.y = ((container.getBounds().height - label.getMeasuredHeight()) / 2);
 
 		container.addChild(label);
+	},
+
+	createContainer: function (x, y, width, height) {
+		var c = new createjs.Container();
+		c.setBounds(0, 0, width, height);
+		c.x = x;
+		c.y = y;
+		return c;
 	}
 
 };
-
-//Text Button
-// function createTextButton (buttonObject, text) {
-
-// 	var buttonContainer = new createjs.Container();
-// 	var btnText = new createjs.Text();
-// 	btnText.text = text;
-// 	btnText.font = "18px 'Slabo 27px'";
-// 	btnText.color = "white";
-// 	btnText.x = (buttonObject.getBounds().width - btnText.getBounds().width) / 2;
-// 	btnText.y = (buttonObject.getBounds().height - btnText.getBounds().height) / 2;
-// 
-// 	buttonContainer.addChild(buttonObject, btnText);
-// 	buttonContainer.mouseChildren = false;
-
-// 	var shape = new createjs.Shape ();
-// 	shape.graphics.beginFill("#000000").drawRect(0,0,buttonContainer.getBounds().width, buttonContainer.getBounds().height);
-// 	buttonContainer.hitArea = shape;
-// 	buttonContainer.cursor = "pointer";
-// 	buttonContainer.cache(0,0,150,60);
-
-// 	return buttonContainer;
-// }

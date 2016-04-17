@@ -5,12 +5,7 @@ var express = require('express');
 global.app = express();
  
 //Serve static client files
-// app.use(express.static('client'));
-
-app.configure(function(){
-	// statische Dateien ausliefern
-	app.use(express.static(__dirname + '/public'));
-});
+app.use(express.static('client'));
 
 app.get('/', function (req, res) {
 	// so wird die Datei index.html ausgegeben

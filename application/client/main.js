@@ -39,6 +39,8 @@ this.uiElements = {};
 
 	initContent();
 
+	//Should be disabled, due to performance reasons
+	//keeping it for debugging reasons
 	// createjs.Ticker.on("tick", function () {
 	// 	stage.update();
 	// });
@@ -55,7 +57,6 @@ function resizeLayout() {
 	stage.canvas.height = window.innerHeight;
 
 	var bg = utils.getEl("background");
-	// var contentBg = utils.getEl("contentBg");
 
 	bg.scaleX = $(window).width() / bg.getBounds().width;
 	bg.scaleY = $(window).width() / bg.getBounds().width;
@@ -178,13 +179,16 @@ function backgroundInitialized () {
 	contentWrapper.addChild(contentContainer);
 	stage.addChild(contentWrapper);
 
-		resizeLayout();
+	resizeLayout();
 
 	utils.getEl("heroesButtonHover").on("click", function () {
 		renderHeroSummary();
 	});
 
-	
+	utils.getEl("journeyButtonHover").on("click", function () {
+		renderJourneyOverview();
+	});
+
 	stage.update();
 }
 
@@ -204,29 +208,39 @@ function renderHeroSummary () {
 		},
 		{
 			id: "xpBar",
-			src: "ui-general-xpbarbg.png"
+			src: "ui-general-herosumxpbar.png"
 		},
 		{
 			id: "detBg",
 			src: "ui-general-herosumbglow.png"
 		},
 		{
-			id: "statIconAttack",
+			id: "statIcon1",
 			src: "content-iconmed-attack.png",
 			value: "Attack"
 		},
 		{
-			id: "statIconDef",
+			id: "statIcon2",
 			src: "content-iconmed-def.png",
 			value: "Defense"
 		},
 		{
-			id: "statIconHealth",
+			id: "statIcon3",
 			src: "content-iconmed-health.png",
 			value: "Health"
 		},
 		{
-			id: "statIconMagic",
+			id: "statIcon4",
+			src: "content-iconmed-magic.png",
+			value: "Magic"
+		},
+		{
+			id: "statIcon5",
+			src: "content-iconmed-magic.png",
+			value: "Magic"
+		},
+		{
+			id: "statIcon6",
 			src: "content-iconmed-magic.png",
 			value: "Magic"
 		}
@@ -241,48 +255,76 @@ function renderHeroSummary () {
 
 		if (event.item.value)
 			uiElements[event.item.id].value = event.item.value;
-	},
+	}, drawHeroContainers);
+}
 
-	function () {
+function drawHeroContainers () {
 
-		for (var i = 1; i <= 3; i++) {
-			var heroContainer = new createjs.Container();
-			var details = new createjs.Container();
+	var bg = utils.getScaledEl("detBg", contentContainer, 1);
+	bg.y = contentContainer.getBounds().height * 0.7;
+	heroSummaryContainer.addChild (bg);
 
-			heroContainer.setBounds (0,	0, contentContainer.getBounds().width/3, contentContainer.getBounds().height);
-			heroContainer.x = contentContainer.getBounds().width/3 * (i-1);
+	for (var i = 1; i <= 3; i++) {
+		var heroContainer = new createjs.Container();
+		var details = new createjs.Container();
 
-			var avatar = utils.getEl("hero" + i);
-			utils.setScale(avatar, heroContainer, 1);
+		heroContainer.setBounds (0,	0, contentContainer.getBounds().width / 3, contentContainer.getBounds().height);
+		heroContainer.x = contentContainer.getBounds().width / 3 * (i-1);
 
-			var bg = utils.getEl("detBg").clone();
-			utils.setScale(bg, heroContainer, 1);
+		var avatar = utils.getScaledEl("hero" + i, heroContainer, 1);
 
-			details.setBounds(0, 0, heroContainer.getBounds().width, heroContainer.getBounds().height * 0.3);
-			details.y = heroContainer.getBounds().height * 0.7;
+		details.setBounds(0, 0, heroContainer.getBounds().width, heroContainer.getBounds().height * 0.3);
+		details.y = heroContainer.getBounds().height * 0.7;
 
-			var row1 = new createjs.Container();
-			row1.setBounds(0,0, details.getBounds().width, details.getBounds().height * 1/3);
-			console.log(row1.getBounds().height);
-			utils.addText(row1, "Hero" + i);
+		for (var k = 0; k < 3; k++) {
+			var row = new createjs.Container();
+			var rowHeight = details.getBounds().height * 1/3;
+			row.setBounds(0, 0, details.getBounds().width, rowHeight);
+			row.y = rowHeight * k;
 
-			details.addChild(bg, row1);
+			var col1 = utils.createContainer(0, 0, row.getBounds().width / 2, row.getBounds().height);
+			var iconCol1 = utils.getScaledEl("statIcon" + (k + 1), col1, 1, true);
+			var descCol1 = utils.createContainer(iconCol1.getBounds().width, 0, row.getBounds().width - iconCol1.getBounds().width, row.getBounds().height);
+			utils.addText(descCol1, Math.floor(Math.random() * 1000));
+			col1.addChild(iconCol1.clone(), descCol1);
 
-			uiElements["heroContainer" + i] = {
-				element: heroContainer
-			};
+			var col2 = utils.createContainer(row.getBounds().width / 2, 0, row.getBounds().width / 2, row.getBounds().height);
+			var iconCol2 = utils.getScaledEl("statIcon" + (k + 4), col2, 1, true);
+			var descCol2 = utils.createContainer(iconCol2.getBounds().width, 0, row.getBounds().width - iconCol1.getBounds().width, row.getBounds().height);
+			utils.addText(descCol2, Math.floor(Math.random() * 1000));
+			col2.addChild(iconCol2.clone(), descCol2);1
 
-			heroContainer.addChild(avatar, details);
-			heroSummaryContainer.addChild(heroContainer);
+			row.addChild(col1, col2);
+			details.addChild(row);
 		}
 
-		var xpBar = utils.getEl("xpBar");
-		utils.setScale(xpBar, contentContainer, 1);
-		xpBar.y = contentContainer.getBounds().height * 0.6;
-		heroSummaryContainer.addChild(xpBar);
+		uiElements["heroContainer" + i] = {
+			element: heroContainer
+		};
 
-		contentContainer.addChild(heroSummaryContainer);
+		heroContainer.addChild(avatar, details);
+		heroSummaryContainer.addChild(heroContainer);
+	}
 
-		stage.update();
-	});
+	var xpBar = utils.getScaledEl("xpBar", contentContainer, 1);
+	xpBar.y = contentContainer.getBounds().height * 0.6;
+
+	heroSummaryContainer.addChild(xpBar);
+
+	contentContainer.addChild(heroSummaryContainer);
+
+	stage.update();
+}
+
+function renderJourneyOverview () {
+	var manifest = [
+		{
+			id: "questIcon",
+			src: "content-iconmed-quest.png"
+		},
+		{
+			id: "questBackground",
+			src: "ui-general-journeyquestselbg.png"
+		}
+	];	
 }
