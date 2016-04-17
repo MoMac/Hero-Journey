@@ -323,8 +323,8 @@ function renderJourneyOverview () {
 			src: "content-iconmed-quest.png"
 		},
 		{
-			id: "questBackground",
-			src: "ui-general-journeyquestselbg.png"
+			id: "actionBg",
+			src: "ui-general-journeyactionbg.png"
 		}
-	];	
+	];
 }
