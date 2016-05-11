@@ -45,13 +45,13 @@ utils = {
 
 	getEl: function (id) {
 		return uiElements[id].element;
-	},
+	}, 
 
 	getElVal: function (id) {
 		return uiElements[id].value;
 	},
 
-	getScaledEl: function (id, tarEl, pct, scaleHeight) {
+	getScaledEl: function (id, tarEl, scaleHeight) {
 		var el = utils.getEl(id);
 		utils.setScale(el, tarEl, 1, scaleHeight);
 		return el;

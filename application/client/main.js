@@ -25,6 +25,7 @@ catch (e) {
  var stage,
  	 preload,
  	 heroSummaryContainer = new createjs.Container(),
+ 	 journeyScreenContainer = new createjs.Container(),
  	 contentWrapper = new createjs.Container(),
  	 contentContainer = new createjs.Container(),
  	 manifest = new Array();
@@ -260,7 +261,17 @@ function renderHeroSummary () {
 
 function drawHeroContainers () {
 
-	var bg = utils.getScaledEl("detBg", contentContainer, 1);
+	contentContainer.removeAllChildren();
+
+	if (heroSummaryContainer.children.length > 0) {
+
+		//@TODO: Implement mechanism for updating hero stats when available
+		contentContainer.addChild(heroSummaryContainer);
+		stage.update();
+		return;
+	}
+
+	var bg = utils.getScaledEl("detBg", contentContainer);
 	bg.y = contentContainer.getBounds().height * 0.7;
 	heroSummaryContainer.addChild (bg);
 
@@ -271,7 +282,7 @@ function drawHeroContainers () {
 		heroContainer.setBounds (0,	0, contentContainer.getBounds().width / 3, contentContainer.getBounds().height);
 		heroContainer.x = contentContainer.getBounds().width / 3 * (i-1);
 
-		var avatar = utils.getScaledEl("hero" + i, heroContainer, 1);
+		var avatar = utils.getScaledEl("hero" + i, heroContainer);
 
 		details.setBounds(0, 0, heroContainer.getBounds().width, heroContainer.getBounds().height * 0.3);
 		details.y = heroContainer.getBounds().height * 0.7;
@@ -283,14 +294,16 @@ function drawHeroContainers () {
 			row.y = rowHeight * k;
 
 			var col1 = utils.createContainer(0, 0, row.getBounds().width / 2, row.getBounds().height);
-			var iconCol1 = utils.getScaledEl("statIcon" + (k + 1), col1, 1, true);
+			var iconCol1 = utils.getScaledEl("statIcon" + (k + 1), col1, true);
 			var descCol1 = utils.createContainer(iconCol1.getBounds().width, 0, row.getBounds().width - iconCol1.getBounds().width, row.getBounds().height);
+			//@TODO: Temporary
 			utils.addText(descCol1, Math.floor(Math.random() * 1000));
 			col1.addChild(iconCol1.clone(), descCol1);
 
 			var col2 = utils.createContainer(row.getBounds().width / 2, 0, row.getBounds().width / 2, row.getBounds().height);
-			var iconCol2 = utils.getScaledEl("statIcon" + (k + 4), col2, 1, true);
+			var iconCol2 = utils.getScaledEl("statIcon" + (k + 4), col2, true);
 			var descCol2 = utils.createContainer(iconCol2.getBounds().width, 0, row.getBounds().width - iconCol1.getBounds().width, row.getBounds().height);
+			//@TODO: Temporary
 			utils.addText(descCol2, Math.floor(Math.random() * 1000));
 			col2.addChild(iconCol2.clone(), descCol2);1
 
@@ -306,7 +319,7 @@ function drawHeroContainers () {
 		heroSummaryContainer.addChild(heroContainer);
 	}
 
-	var xpBar = utils.getScaledEl("xpBar", contentContainer, 1);
+	var xpBar = utils.getScaledEl("xpBar", contentContainer);
 	xpBar.y = contentContainer.getBounds().height * 0.6;
 
 	heroSummaryContainer.addChild(xpBar);
@@ -325,6 +338,35 @@ function renderJourneyOverview () {
 		{
 			id: "actionBg",
 			src: "ui-general-journeyactionbg.png"
+		},
+		{
+			id: "journeyMap",
+			src: "content-journeymap.png"
+		},
+		{
+			id: "journeyDescBg",
+			src: "ui-general-journeydescbg.png"
 		}
 	];
+
+	preloadAssets(manifest, function (event) {
+		var result = preload.getResult(event.item.id);
+		loadedItem = new createjs.Bitmap(result);
+		uiElements[event.item.id] = {
+			element: loadedItem
+		};
+	}, drawJourneyScreen);
+}
+
+function drawJourneyScreen () {
+	contentContainer.removeAllChildren();
+
+	var journeyActionContainer = new createjs.Container();
+	
+	journeyActionContainer.setBounds(0, 0, contentContainer.getBounds().width / 3, contentContainer.getBounds().height);
+	var actionBg = utils.getScaledEl("actionBg", journeyActionContainer, true);
+	journeyActionContainer.addChild(actionBg);
+
+	contentContainer.addChild(journeyActionContainer);
+	stage.update();
 }
