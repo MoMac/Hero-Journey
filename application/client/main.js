@@ -67,9 +67,8 @@ function resizeLayout() {
 		bg.scaleY = $(window).height() / bg.getBounds().height;
 	}
 
-	utils.getEl("headerBar").scaleX = $(window).width() / utils.getEl("headerBar").getBounds().width;
+	// utils.getEl("headerBar").scaleX = $(window).width() / utils.getEl("headerBar").getBounds().width;
 
-	contentWrapper.y = 55;
 	contentWrapper.scaleX = ($(window).height() - contentWrapper.getTransformedBounds().y) / contentWrapper.getBounds().height;
 	contentWrapper.scaleY = ($(window).height() - contentWrapper.getTransformedBounds().y) / contentWrapper.getBounds().height;
 	contentWrapper.x = ($(window).width() - contentWrapper.getTransformedBounds().width) / 2;
@@ -103,10 +102,10 @@ function initContent() {
 			id: "contentBg",
 			src: "ui-general-generalbg.png"
 		},
-		{
-			id: "headerBar",
-			src: "ui-general-headerbg.png",
-		},
+		// {
+		// 	id: "headerBar",
+		// 	src: "ui-general-headerbg.png",
+		// },
 		{
 			id: "journeyButton",
 			src: "ui-general-headerbutton-01.png"
@@ -153,7 +152,6 @@ function backgroundImageLoaded (event) {
 		utils.setHover(event.item);
 	}
 	else if (event.item.id == "contentBg") {
-		loadedItem.alpha = 0.8;
 		contentWrapper.addChild(loadedItem);
 		return;
 	}
@@ -172,9 +170,9 @@ function backgroundInitialized () {
 	var contentBounds = contentWrapper.getTransformedBounds();
 
 	//Set Bounds for Content Area
-	contentContainer.setBounds(0, 0, contentBounds.width - (contentBounds.width * 0.05), contentBounds.height - (contentBounds.height * 0.0421052631578947));
-	contentContainer.x = contentBounds.x + contentBounds.width *  0.025;
-	contentContainer.y = contentBounds.y + contentBounds.height * 0.0210526315789474;
+	contentContainer.setBounds(0, 0, contentBounds.width - (contentBounds.width * 0.266), contentBounds.height - (contentBounds.height * 0.306));
+	contentContainer.x = contentBounds.x + contentBounds.width *  0.133;
+	contentContainer.y = contentBounds.y + contentBounds.height * 0.153;
 
 	
 	contentWrapper.addChild(contentContainer);
@@ -213,7 +211,7 @@ function renderHeroSummary () {
 		},
 		{
 			id: "detBg",
-			src: "ui-general-herosumbglow.png"
+			src: "ui-general-herosumbg.png"
 		},
 		{
 			id: "statIcon1",
@@ -256,10 +254,10 @@ function renderHeroSummary () {
 
 		if (event.item.value)
 			uiElements[event.item.id].value = event.item.value;
-	}, drawHeroContainers);
+	}, makeHeroSummaryScreen);
 }
 
-function drawHeroContainers () {
+function makeHeroSummaryScreen () {
 
 	contentContainer.removeAllChildren();
 
@@ -272,7 +270,7 @@ function drawHeroContainers () {
 	}
 
 	var bg = utils.getScaledEl("detBg", contentContainer);
-	bg.y = contentContainer.getBounds().height * 0.7;
+	bg.y = contentContainer.getBounds().height * 3/5;
 	heroSummaryContainer.addChild (bg);
 
 	for (var i = 1; i <= 3; i++) {
@@ -297,14 +295,18 @@ function drawHeroContainers () {
 			var iconCol1 = utils.getScaledEl("statIcon" + (k + 1), col1, true);
 			var descCol1 = utils.createContainer(iconCol1.getBounds().width, 0, row.getBounds().width - iconCol1.getBounds().width, row.getBounds().height);
 			//@TODO: Temporary
-			utils.addText(descCol1, Math.floor(Math.random() * 1000));
+			utils.addText(descCol1, Math.floor(Math.random() * 1000), {
+				centerY: true
+			});
 			col1.addChild(iconCol1.clone(), descCol1);
 
 			var col2 = utils.createContainer(row.getBounds().width / 2, 0, row.getBounds().width / 2, row.getBounds().height);
 			var iconCol2 = utils.getScaledEl("statIcon" + (k + 4), col2, true);
 			var descCol2 = utils.createContainer(iconCol2.getBounds().width, 0, row.getBounds().width - iconCol1.getBounds().width, row.getBounds().height);
 			//@TODO: Temporary
-			utils.addText(descCol2, Math.floor(Math.random() * 1000));
+			utils.addText(descCol2, Math.floor(Math.random() * 1000), {
+				centerY: true
+			});
 			col2.addChild(iconCol2.clone(), descCol2);1
 
 			row.addChild(col1, col2);
@@ -336,8 +338,12 @@ function renderJourneyOverview () {
 			src: "content-iconmed-quest.png"
 		},
 		{
+			id: "questBg",
+			src: "ui-general-questbg.png"
+		},
+		{
 			id: "actionBg",
-			src: "ui-general-journeyactionbg.png"
+			src: "ui-general-actionbg.png"
 		},
 		{
 			id: "journeyMap",
@@ -355,18 +361,62 @@ function renderJourneyOverview () {
 		uiElements[event.item.id] = {
 			element: loadedItem
 		};
-	}, drawJourneyScreen);
+	}, makeJourneyScreen);
 }
 
-function drawJourneyScreen () {
+function makeJourneyScreen () {
 	contentContainer.removeAllChildren();
 
-	var journeyActionContainer = new createjs.Container();
-	
-	journeyActionContainer.setBounds(0, 0, contentContainer.getBounds().width / 3, contentContainer.getBounds().height);
-	var actionBg = utils.getScaledEl("actionBg", journeyActionContainer, true);
-	journeyActionContainer.addChild(actionBg);
+	var journeyActionContainer = utils.createContainer(0, 0, contentContainer.getBounds().width / 3, contentContainer.getBounds().height);
 
-	contentContainer.addChild(journeyActionContainer);
+	var questBg = utils.getScaledEl("questBg", journeyActionContainer, true);
+	var actionBg = utils.getScaledEl("actionBg", journeyActionContainer, true);
+
+	var questButton = utils.createContainer(0, 0, questBg.getTransformedBounds().width / 2, questBg.getTransformedBounds().height / 10);
+	utils.addText(questButton, "Quests", {
+		size: 24,
+		color: "white",
+		centerX: true,
+		centerY: true
+	});
+	utils.setCursor(questButton);
+
+	var actionButton = utils.createContainer(questBg.getTransformedBounds().width / 2, 0, questBg.getTransformedBounds().width / 2, questBg.getTransformedBounds().height / 10);
+	utils.addText(actionButton, "Aktionen", {
+		size: 24,
+		color: "white",
+		centerX: true,
+		centerY: true
+	});
+	utils.setCursor(actionButton);
+
+	
+	actionButton.on("click", function () {
+		var bgIndex = journeyActionContainer.getChildIndex(questBg);
+		journeyActionContainer.removeChildAt(bgIndex);
+		journeyActionContainer.addChildAt(actionBg, bgIndex);
+		stage.update();
+	});
+
+	questButton.on("click", function () {
+		var bgIndex = journeyActionContainer.getChildIndex(actionBg);
+		journeyActionContainer.removeChildAt(bgIndex);
+		journeyActionContainer.addChildAt(questBg, bgIndex);
+		stage.update();
+	});
+
+
+	var journeyMap = utils.getScaledEl("journeyMap", contentContainer, true);
+	journeyMap.x = contentContainer.getBounds().width / 3;
+
+	//@TODO: Move to onClick of tabs
+	// var journeyDescBg = utils.getScaledEl("journeyDescBg", contentContainer, false, contentContainer.getBounds().width * 2/3);
+	// journeyDescBg.x = contentContainer.getBounds().width / 3;
+	// journeyDescBg.y = contentContainer.getBounds().height * 7/10;
+
+	journeyActionContainer.addChild(questBg, questButton, actionButton);
+
+	contentContainer.addChild(journeyActionContainer, journeyMap);
+
 	stage.update();
 }

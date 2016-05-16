@@ -18,12 +18,10 @@ utils = {
 				el.visible = false;
 				utils.getEl(item.id + "Hover").visible = true;
 				stage.update();
-				// layoutContainer.updateCache();
 			});
 			el.on("mouseout", function () {
 				el.visible = true;
 				utils.getEl(item.id + "Hover").visible = false;
-				// layoutContainer.updateCache();
 				stage.update();
 			});
 		}
@@ -31,13 +29,11 @@ utils = {
 			el.on("mouseover", function () {
 				el.visible = true;
 				utils.getEl(item.id.slice(0, item.id.indexOf("Hover"))).visible = false;
-				// layoutContainer.updateCache();
 				stage.update();
 			});
 			el.on("mouseout", function () {
 				el.visible = false;
 				utils.getEl(item.id.slice(0, item.id.indexOf("Hover"))).visible = true;
-				// layoutContainer.updateCache();
 				stage.update();
 			})
 		}
@@ -51,9 +47,9 @@ utils = {
 		return uiElements[id].value;
 	},
 
-	getScaledEl: function (id, tarEl, scaleHeight) {
+	getScaledEl: function (id, tarEl, scaleHeight, pct) {
 		var el = utils.getEl(id);
-		utils.setScale(el, tarEl, 1, scaleHeight);
+		utils.setScale(el, tarEl, pct ? pct : 1, scaleHeight);
 		return el;
 	},
 
@@ -69,17 +65,14 @@ utils = {
 		el.scaleY = scaleFactor;
 	},
 
-	addText: function (container, text, size) {
+	addText: function (container, text, options) {
 		var label = new createjs.Text();
 		label.text = text;
-		label.font = "18px 'Slabo 27px'";
-		if (size) {
-			label.font = size + "px 'Slabo 27px'"
-		}
-
-		label.color = "black";
-		label.x = 10;
-		label.y = ((container.getBounds().height - label.getMeasuredHeight()) / 2);
+		
+		label.font = options && options.size ? options.size + "px 'Slabo 27px'" : "18px 'Slabo 27px'";
+		label.color = options && options.color ? options.color : "black";
+		label.x = options && options.centerX ? ((container.getBounds().width - label.getMeasuredWidth()) / 2) : 10;
+		label.y = options && options.centerY ? ((container.getBounds().height - label.getMeasuredHeight()) / 2) : 10;
 
 		container.addChild(label);
 	},
