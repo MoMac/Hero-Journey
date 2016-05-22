@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/MoMac/Hero-Journey#readme",
   "dependencies": {
-    "express": "^4.13.4"
+    "express": "^4.13.4",
+    "mysql": "^2.10.2",
+    "socket.io": "^1.4.6",
+    "uuid": "^2.0.2"
   }
 }

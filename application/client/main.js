@@ -35,6 +35,8 @@ this.uiElements = {};
 
  function init() {
 
+ 	var socket = io();
+
 	stage = new createjs.Stage("demoCanvas");
 	stage.enableMouseOver(10);
 

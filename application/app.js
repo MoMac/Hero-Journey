@@ -1,18 +1,20 @@
-// Import the Express module
 var express = require('express');
+var app = express();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 
-// Create a new instance of Express
-global.app = express();
- 
 //Serve static client files
 app.use(express.static('client'));
 
-app.get('/', function (req, res) {
-	// so wird die Datei index.html ausgegeben
-	res.sendfile(__dirname + '/public/index.html');
+app.get('/', function(req, res){
+  res.sendFile('index.html');
 });
 
-// Create a http server on port 8080
-app.listen(8080, function () {
-  console.log("Listening on port 8080!");
+io.on('connection', function(socket){
+  console.log('a user connected');
 });
+
+http.listen(3000, function(){
+  console.log('listening on *:3000');
+});
+
