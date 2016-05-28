@@ -46,6 +46,7 @@ $(function ($) {
 
         	IO.socket.on('renderHeroSummary', App.renderHeroSummary);
         	IO.socket.on('renderJourneyOverview', App.renderJourneyOverview);
+        	IO.socket.on('questsFound', App.renderQuests);
         }
 
     };
@@ -204,12 +205,11 @@ $(function ($) {
 			App.resizeLayout();
 
 			utils.getEl("heroesButtonHover").on("click", function () {
-				// App.renderHeroSummary();
 				IO.socket.emit('showHeroSummary');
 			});
 
 			utils.getEl("journeyButtonHover").on("click", function () {
-				App.renderJourneyOverview();
+				IO.socket.emit("showJourneyOverview");
 			});
 
 			stage.update();
@@ -411,6 +411,8 @@ $(function ($) {
 				centerY: true
 			});
 			utils.setCursor(actionButton);
+
+			IO.socket.emit('getQuests');
 
 			
 			actionButton.on("click", function () {

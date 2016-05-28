@@ -7,13 +7,13 @@ exports.initGame = function(sio, socket) {
 
 	// Bind custom event handlers to the socket
     gameSocket.on('showHeroSummary', showHeroSummary);
-    gameSocket.on('showJourneyScreen', showJourneyScreen);
+    gameSocket.on('showJourneyOverview', showJourneyOverview);
 };
 
 function showHeroSummary () {
 	this.emit("renderHeroSummary");
 };
 
-function showJourneyScreen () {
+function showJourneyOverview () {
 	this.emit("renderJourneyOverview");
 };
