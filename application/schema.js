@@ -1,23 +1,18 @@
 ﻿var sUtil = require('./SQLUtils.js');
 
-exports.getQuests = function (socket, connection) {
+exports.setDBHandlers = function (socket, connection) {
 
     socket.on('getQuests', function (data) {
-       
+        //TBC
         var statement = "SELECT * FROM QUESTS";   
-         var select = sUtil.Select(statement, connection, function (err, data) {
-            if(err) {
-                console.log("ERROR" + err);
+        var select = sUtil.Select(statement, connection, function (err, data) {
+            if(data.length > 0) {
+                socket.emit('questsFound', data);
             }
             else {
-                 if(data.length > 0) {
-                     socket.emit('questsFound', data);
-                 }
-                 else {
-                     console.error("No Data found in table Quests");
-                 }
+                console.error("No Data found in table Quests");
             }
-         }); 
+        }); 
         
     });
 };

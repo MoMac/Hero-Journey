@@ -17,9 +17,9 @@ app.get('/', function (req, res) {
 });
 
 io.on('connection', function (socket) {
+	//Initialize socket handlers
 	game.initGame(io, socket);
-
- 	schema.getQuests(socket, DBConnection);
+ 	schema.setDBHandlers(socket, DBConnection);
 });
 
 http.listen(3000, function () {

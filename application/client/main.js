@@ -65,15 +65,18 @@ $(function ($) {
 
 			//Should be disabled, due to performance reasons
 			//keeping it for debugging reasons
-			// createjs.Ticker.on("tick", function () {
-			// 	stage.update();
-			// });
+			createjs.Ticker.on("tick", function () {
+				stage.update();
+			});
+
+			createjs.Ticker.timingMode = createjs.Ticker.RAF_SYNCHED;
+			createjs.Ticker.setFPS(30);
 			
 			//Initialize canvas size
 			stage.canvas.width = window.innerWidth;
 			stage.canvas.height = window.innerHeight;
 
-			stage.update();
+			// stage.update();
 		},
 
 		resizeLayout: function () {	
@@ -97,7 +100,7 @@ $(function ($) {
 			contentWrapper.scaleY = ($(window).height() - contentWrapper.getTransformedBounds().y) / contentWrapper.getBounds().height;
 			contentWrapper.x = ($(window).width() - contentWrapper.getTransformedBounds().width) / 2;
 
-			stage.update();
+			// stage.update();
 
 		},
 
@@ -158,9 +161,8 @@ $(function ($) {
 
 			var result = App.queue.getResult(event.item.id);
 			loadedItem = new createjs.Bitmap(result);
-			uiElements[event.item.id] = {
-				element: loadedItem
-			};
+
+			utils.addEl(loadedItem, event.item.id)
 
 
 			if (event.item.id.indexOf("journeyButton") >= 0) {
@@ -212,7 +214,7 @@ $(function ($) {
 				IO.socket.emit("showJourneyOverview");
 			});
 
-			stage.update();
+			// stage.update();
 		},
 
 		renderHeroSummary: function () {
@@ -272,12 +274,7 @@ $(function ($) {
 			App.preloadAssets(manifest, function (event) {
 				var result = App.queue.getResult(event.item.id);
 				loadedItem = new createjs.Bitmap(result);
-				uiElements[event.item.id] = {
-					element: loadedItem
-				}
-
-				if (event.item.value)
-					uiElements[event.item.id].value = event.item.value;
+				utils.addEl(loadedItem, event.item.id, event.item.value);
 			}, App.makeHeroSummaryScreen);
 		},
 
@@ -289,7 +286,7 @@ $(function ($) {
 
 				//@TODO: Implement mechanism for updating hero stats when available
 				contentContainer.addChild(heroSummaryContainer);
-				stage.update();
+				// stage.update();
 				return;
 			}
 			var bg = utils.getScaledEl("detBg", contentContainer);
@@ -318,6 +315,7 @@ $(function ($) {
 					var descCol1 = utils.createContainer(iconCol1.getBounds().width, 0, row.getBounds().width - iconCol1.getBounds().width, row.getBounds().height);
 					//@TODO: Temporary
 					utils.addText(descCol1, Math.floor(Math.random() * 1000), {
+						paddingX: 10,
 						centerY: true
 					});
 					col1.addChild(iconCol1.clone(), descCol1);
@@ -327,6 +325,7 @@ $(function ($) {
 					var descCol2 = utils.createContainer(iconCol2.getBounds().width, 0, row.getBounds().width - iconCol1.getBounds().width, row.getBounds().height);
 					//@TODO: Temporary
 					utils.addText(descCol2, Math.floor(Math.random() * 1000), {
+						paddingX: 10,
 						centerY: true
 					});
 					col2.addChild(iconCol2.clone(), descCol2);1
@@ -335,9 +334,7 @@ $(function ($) {
 					details.addChild(row);
 				}
 
-				uiElements["heroContainer" + i] = {
-					element: heroContainer
-				};
+				utils.addEl(heroContainer, "heroContainer" + i);
 
 				heroContainer.addChild(avatar, details);
 				heroSummaryContainer.addChild(heroContainer);
@@ -350,7 +347,7 @@ $(function ($) {
 
 			contentContainer.addChild(heroSummaryContainer);
 
-			stage.update();
+			// stage.update();
 		},
 
 		renderJourneyOverview: function () {
@@ -380,9 +377,7 @@ $(function ($) {
 			App.preloadAssets(manifest, function (event) {
 				var result = App.queue.getResult(event.item.id);
 				loadedItem = new createjs.Bitmap(result);
-				uiElements[event.item.id] = {
-					element: loadedItem
-				};
+				utils.addEl(loadedItem, event.item.id);
 			}, App.makeJourneyScreen);
 		},
 
@@ -412,37 +407,106 @@ $(function ($) {
 			});
 			utils.setCursor(actionButton);
 
+			//Request Quests from server/DB
 			IO.socket.emit('getQuests');
-
 			
 			actionButton.on("click", function () {
 				var bgIndex = journeyActionContainer.getChildIndex(questBg);
 				journeyActionContainer.removeChildAt(bgIndex);
 				journeyActionContainer.addChildAt(actionBg, bgIndex);
-				stage.update();
+				// stage.update();
 			});
 
 			questButton.on("click", function () {
 				var bgIndex = journeyActionContainer.getChildIndex(actionBg);
 				journeyActionContainer.removeChildAt(bgIndex);
 				journeyActionContainer.addChildAt(questBg, bgIndex);
-				stage.update();
+				// stage.update();
 			});
-
 
 			var journeyMap = utils.getScaledEl("journeyMap", contentContainer, true);
 			journeyMap.x = contentContainer.getBounds().width / 3;
 
-			//@TODO: Move to onClick of tabs
-			// var journeyDescBg = utils.getScaledEl("journeyDescBg", contentContainer, false, contentContainer.getBounds().width * 2/3);
-			// journeyDescBg.x = contentContainer.getBounds().width / 3;
-			// journeyDescBg.y = contentContainer.getBounds().height * 7/10;
-
 			journeyActionContainer.addChild(questBg, questButton, actionButton);
 
-			contentContainer.addChild(journeyActionContainer, journeyMap);
+			utils.addEl(journeyActionContainer, "journeyActionContainer");
 
-			stage.update();
+			contentContainer.addChild(journeyMap, journeyActionContainer);
+
+			// stage.update();
+		},
+		renderQuests: function (questData) {
+
+			if (!questData) {
+				console.log("Error rendering quests: no data from DB");
+				return;
+			}
+
+			var cont = utils.getEl("journeyActionContainer");
+			var questContainer = utils.createContainer(0, cont.getBounds().height / 10, cont.getBounds().width, cont.getBounds().height * 9/10);
+			var a = "test";
+
+			for (var i = 0; i < questData.length; i++) {
+				var quest = utils.createContainer(0, (cont.getBounds().height / 10) * i, cont.getBounds().width, cont.getBounds().height / 10);
+				var questDesc = questData[i].description;
+				var questTitle = questData[i].title;
+
+				var titleLabel = utils.addText(quest, questTitle, {
+					paddingX: 20,
+					paddingY: 25,
+					color: "white",
+					size: 20
+				});
+				utils.addText(quest, questData[i].subtitle, {
+					paddingX: 35,
+					paddingY: titleLabel.getMeasuredHeight() + 30,
+					color: "#888"
+				});
+				utils.setCursor(quest);
+				questContainer.addChild(quest);
+
+				quest.on("click", function () {
+					
+					var journeyDescBg = utils.getScaledEl("journeyDescBg", contentContainer, false, 2/3);
+
+					var journeyDetailsCont = utils.createContainer(0, 0, journeyDescBg.getTransformedBounds().width, journeyDescBg.getTransformedBounds().height);
+					journeyDetailsCont.x = - journeyDescBg.getBounds().width;
+					journeyDetailsCont.y = contentContainer.getBounds().height * 7/10;
+
+					var questDescCont = utils.createContainer(0, 0, journeyDetailsCont.getBounds().width / 2, journeyDetailsCont.getBounds().height);
+
+					console.log("cont with: " + contentContainer.getBounds().width);
+					console.log("bg  with: " + journeyDescBg.getBounds().width);
+					console.log("det cont with: " + journeyDetailsCont.getBounds().width);
+					console.log("desc cont with: " + questDescCont.getBounds().width);
+
+					var detTitleLabel = utils.addText(questDescCont, questTitle, {
+						paddingX: 40,
+						paddingY: 25,
+						size: 20,
+						color: "white"
+					});
+					utils.addText(questDescCont, questDesc, {
+						paddingX: 40,
+						paddingY: detTitleLabel.getMeasuredHeight() + 30,
+						color: "#888",
+						size: 16
+					}).lineWidth = questDescCont.getBounds().width;
+
+					journeyDetailsCont.addChild(journeyDescBg, questDescCont);
+
+					var shape = new createjs.Shape();
+					shape.x = 0;
+					shape.graphics.beginFill("#fff").drawRect(0, contentContainer.getBounds().height * 7/10, contentContainer.getBounds().width, journeyDescBg.getBounds().height);
+					journeyDetailsCont.mask = shape;
+					contentContainer.addChildAt(journeyDetailsCont, contentContainer.getChildIndex(cont));
+
+					createjs.Tween.get(journeyDetailsCont).to({x:contentContainer.getBounds().width / 3}, 300);
+				});
+			}
+
+			cont.addChild(questContainer);			
+			// stage.update();
 		}
 	};
 
@@ -467,26 +531,33 @@ $(function ($) {
 				el.on("mouseover", function () {
 					el.visible = false;
 					utils.getEl(item.id + "Hover").visible = true;
-					stage.update();
+					// stage.update();
 				});
 				el.on("mouseout", function () {
 					el.visible = true;
 					utils.getEl(item.id + "Hover").visible = false;
-					stage.update();
+					// stage.update();
 				});
 			}
 			else {
 				el.on("mouseover", function () {
 					el.visible = true;
 					utils.getEl(item.id.slice(0, item.id.indexOf("Hover"))).visible = false;
-					stage.update();
+					// stage.update();
 				});
 				el.on("mouseout", function () {
 					el.visible = false;
 					utils.getEl(item.id.slice(0, item.id.indexOf("Hover"))).visible = true;
-					stage.update();
+					// stage.update();
 				})
 			}
+		},
+
+		addEl: function (el, id, val) {
+			uiElements[id] = {
+				element: el,
+				value: val ? val : undefined
+			};
 		},
 
 		getEl: function (id) {
@@ -516,15 +587,22 @@ $(function ($) {
 		},
 
 		addText: function (container, text, options) {
-			var label = new createjs.Text();
-			label.text = text;
-			
-			label.font = options && options.size ? options.size + "px 'Slabo 27px'" : "18px 'Slabo 27px'";
-			label.color = options && options.color ? options.color : "black";
-			label.x = options && options.centerX ? ((container.getBounds().width - label.getMeasuredWidth()) / 2) : 10;
-			label.y = options && options.centerY ? ((container.getBounds().height - label.getMeasuredHeight()) / 2) : 10;
+			try {
+				var label = new createjs.Text();
+				label.text = text;
+				
+				label.font = options && options.size ? options.size + "px 'Slabo 27px'" : "18px 'Slabo 27px'";
+				label.color = options && options.color ? options.color : "black";
+				label.x = options && options.centerX ? ((container.getBounds().width - label.getMeasuredWidth()) / 2) : options.paddingX;
+				label.y = options && options.centerY ? ((container.getBounds().height - label.getMeasuredHeight()) / 2) : options.paddingY;
 
-			container.addChild(label);
+				container.addChild(label);
+
+				return label;
+			}
+			catch (e) {
+				console.log("Error adding text: " + e);
+			}
 		},
 
 		createContainer: function (x, y, width, height) {
@@ -534,6 +612,20 @@ $(function ($) {
 			c.y = y ? y : 0;
 			return c;
 		}
+
+
+	// Mousewheel scroll functionality WIP
+	// 		$(window).on("mousewheel", function () {
+	// 	var objects = stage.getObjectsUnderPoint();
+
+	// 	for (var i = 0; i < objects.length; i++) {
+	// 		console.log(objects[i].id);
+	// 		if (objects[i] == utils.getEl("journeyActionContainer")) {
+	// 			console.log("found container!!!");
+	// 			break;
+	// 		}
+	// 	}
+	// });
 
 	};
 
