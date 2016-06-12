@@ -438,16 +438,16 @@ $(function ($) {
 		renderQuests: function (questData) {
 
 			if (!questData) {
-				console.log("Error rendering quests: no data from DB");
+				console.log("Error rendering quests: no data");
 				return;
 			}
 
 			var cont = utils.getEl("journeyActionContainer");
 			var questContainer = utils.createContainer(0, cont.getBounds().height / 10, cont.getBounds().width, cont.getBounds().height * 9/10);
-			var a = "test";
 
 			for (var i = 0; i < questData.length; i++) {
 				var quest = utils.createContainer(0, (cont.getBounds().height / 10) * i, cont.getBounds().width, cont.getBounds().height / 10);
+
 				var questDesc = questData[i].description;
 				var questTitle = questData[i].title;
 
@@ -474,11 +474,6 @@ $(function ($) {
 					journeyDetailsCont.y = contentContainer.getBounds().height * 7/10;
 
 					var questDescCont = utils.createContainer(0, 0, journeyDetailsCont.getBounds().width / 2, journeyDetailsCont.getBounds().height);
-
-					console.log("cont with: " + contentContainer.getBounds().width);
-					console.log("bg  with: " + journeyDescBg.getBounds().width);
-					console.log("det cont with: " + journeyDetailsCont.getBounds().width);
-					console.log("desc cont with: " + questDescCont.getBounds().width);
 
 					var detTitleLabel = utils.addText(questDescCont, questTitle, {
 						paddingX: 40,
@@ -519,7 +514,8 @@ $(function ($) {
 
 		setCursor: function (element) {
 			var area = utils.hitBox.clone();
-			area.graphics.beginFill("#000").drawRect(0, 0, element.getBounds().width, element.getBounds().height);
+			area.graphics.beginFill("#000").drawRect(0, 0, element.getTransformedBounds().width, element.getTransformedBounds().height);
+			area.setBounds(0, 0, element.getTransformedBounds().width, element.getTransformedBounds().height);
 			element.hitArea = area;
 			element.cursor = "pointer";
 		},
