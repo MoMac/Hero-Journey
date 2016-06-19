@@ -1,4 +1,6 @@
 CREATE DATABASE `joh`;
+SET PASSWORD FOR root@localhost = PASSWORD('your_root_password');
+USE joh;
 CREATE TABLE `quests` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
